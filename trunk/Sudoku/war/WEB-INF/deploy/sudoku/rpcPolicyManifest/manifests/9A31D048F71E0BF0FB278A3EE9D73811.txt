@@ -1,0 +1,2 @@
+serviceClass: com.Sudoku.client.GreetingService
+path: FEB69AF08D2F9BC81506B3934EF7087F.gwt.rpc
