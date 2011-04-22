@@ -1,5 +1,6 @@
 package com.Sudoku.client;
 
+import com.Sudoku.shared.Sudoku;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -170,6 +171,55 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 
 	@Override
 	public void onClick(ClickEvent event) {
+		int[][] data = new int[9][9];
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				data[i][j] = Integer.parseInt(celdas[i][j].getText());
+			}
+		}
+		if (event.getSource().equals(fuerzabruta)) {
+			server.fuerzaBruta(data,
+					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Sudoku result) {
+							setResultado(result);
+						}
+					});
+		} else if (event.getSource().equals(mmmm)) {
+			server.mmmm(data, new AsyncCallback<com.Sudoku.shared.Sudoku>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+				}
+
+				@Override
+				public void onSuccess(Sudoku result) {
+					setResultado(result);
+				}
+			});
+		} else if (event.getSource().equals(aproximacion)) {
+			server.aproximacion(data,
+					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Sudoku result) {
+							setResultado(result);
+						}
+					});
+
+		}
 
 	}
 
@@ -278,6 +328,11 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 				celdas[i][j].removeStyleName("CeldaMuestra");
 			}
 		}
+	}
+
+	private void setResultado(Sudoku result) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
