@@ -4,6 +4,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -14,7 +18,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler {
+public class Tabla extends DecoratorPanel implements KeyUpHandler,
+		ClickHandler, MouseOverHandler, MouseOutHandler {
 
 	private ClientController controller;
 	private ServiceAsync server;
@@ -22,7 +27,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 
 	private VerticalPanel sudoku;
 	private Grid grid;
-	private TextBox[][] celdas;
+	private Celda[][] celdas;
 
 	private VerticalPanel botones;
 	private Button fuerzabruta;
@@ -42,7 +47,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 		this.setWidget(panel);
 		this.setSize("924px", "668px");
 
-		celdas = new TextBox[10][10];
+		celdas = new Celda[10][10];
 		sudoku = new VerticalPanel();
 		sudoku.setSize("534px", "534px");
 		sudoku.setStyleName("Sudoku");
@@ -51,19 +56,31 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 		grid.setCellSpacing(8);
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				celdas[i][j] = new TextBox();
+				celdas[i][j] = new Celda(i, j);
 				celdas[i][j].setSize("50px", "50px");
 				if (i == 9) {
-					celdas[i][j].setStyleName("Boton");
-					celdas[i][j].setText(Integer.toString(j + 1));
-					celdas[i][j].setEnabled(false);
+					if (j == 9) {
+						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setEnabled(false);
+					} else {
+						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setText(Integer.toString(j + 1));
+						celdas[i][j].setEnabled(false);
+					}
 				} else if (j == 9) {
-					celdas[i][j].setStyleName("Boton");
-					celdas[i][j].setText(Integer.toString(i + 1));
-					celdas[i][j].setEnabled(false);
+					if (i == 9) {
+						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setEnabled(false);
+					} else {
+						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setText(Integer.toString(i + 1));
+						celdas[i][j].setEnabled(false);
+					}
 				} else {
 					celdas[i][j].setStyleName("Celda");
 					celdas[i][j].addKeyUpHandler(this);
+					celdas[i][j].addMouseOverHandler(this);
+					celdas[i][j].addMouseOutHandler(this);
 				}
 				grid.setWidget(i, j, celdas[i][j]);
 			}
@@ -113,7 +130,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 		} catch (NumberFormatException ex) {
 			celda.setText("");
 		}
-		//TODO quitar css si esta vacia la celda
+
 		int[][] s = new int[9][9];
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -124,6 +141,10 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 				}
 
 			}
+		}
+		if (celda.getText().length() == 0) {
+			celda.removeStyleName("CeldaLlena");
+			return;
 		}
 		server.isSudoku(s, new AsyncCallback<com.Sudoku.shared.Sudoku>() {
 
@@ -166,6 +187,97 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler, ClickHandler 
 		mmmm.setEnabled(b);
 		fuerzabruta.setEnabled(b);
 		aproximacion.setEnabled(b);
+	}
+
+	private class Celda extends TextBox {
+		int x, y;
+
+		public Celda(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+	}
+
+	@Override
+	public void onMouseOver(MouseOverEvent event) {
+		Celda celda = (Celda) event.getSource();
+		for (int i = 0; i < 9; i++) {
+			celdas[celda.x][i].addStyleName("CeldaMuestra");
+		}
+		for (int i = 0; i < 9; i++) {
+			celdas[i][celda.y].addStyleName("CeldaMuestra");
+		}
+
+		int k = 0, l = 0, m = 0, n = 0;
+		if (celda.x < 3) {
+			k = 0;
+			l = 3;
+		} else if (celda.x < 6) {
+			k = 3;
+			l = 6;
+		} else if (celda.x < 9) {
+			k = 6;
+			l = 9;
+		}
+
+		if (celda.y < 3) {
+			m = 0;
+			n = 3;
+		} else if (celda.y < 6) {
+			m = 3;
+			n = 6;
+		} else if (celda.y < 9) {
+			m = 6;
+			n = 9;
+		}
+
+		for (int i = k; i < l; i++) {
+			for (int j = m; j < n; j++) {
+				celdas[i][j].addStyleName("CeldaMuestra");
+			}
+		}
+
+	}
+
+	@Override
+	public void onMouseOut(MouseOutEvent event) {
+		Celda celda = (Celda) event.getSource();
+		for (int i = 0; i < 9; i++) {
+			celdas[celda.x][i].removeStyleName("CeldaMuestra");
+		}
+		for (int i = 0; i < 9; i++) {
+			celdas[i][celda.y].removeStyleName("CeldaMuestra");
+		}
+
+		int k = 0, l = 0, m = 0, n = 0;
+		if (celda.x < 3) {
+			k = 0;
+			l = 3;
+		} else if (celda.x < 6) {
+			k = 3;
+			l = 6;
+		} else if (celda.x < 9) {
+			k = 6;
+			l = 9;
+		}
+
+		if (celda.y < 3) {
+			m = 0;
+			n = 3;
+		} else if (celda.y < 6) {
+			m = 3;
+			n = 6;
+		} else if (celda.y < 9) {
+			m = 6;
+			n = 9;
+		}
+
+		for (int i = k; i < l; i++) {
+			for (int j = m; j < n; j++) {
+				celdas[i][j].removeStyleName("CeldaMuestra");
+			}
+		}
 	}
 
 }

@@ -530,6 +530,48 @@ public class Sudoku implements Serializable {
 			}
 		}
 
+		for (int a = 0; a < 9; a++) {
+			for (int b = 0; b < 9; b++) {
+				int k = 0, l = 0, m = 0, n = 0;
+				if (a < 3) {
+					k = 0;
+					l = 3;
+				} else if (a < 6) {
+					k = 3;
+					l = 6;
+				} else if (a < 9) {
+					k = 6;
+					l = 9;
+				}
+
+				if (celdas.get(a).get(b).isSet()) {
+					if (b < 3) {
+						m = 0;
+						n = 3;
+					} else if (b < 6) {
+						m = 3;
+						n = 6;
+					} else if (b < 9) {
+						m = 6;
+						n = 9;
+					}
+
+					for (int i = k; i < l; i++) {
+						for (int j = m; j < n; j++) {
+							if (celdas.get(i).get(j).isSet()) {
+								if (celdas.get(i).get(j).getValor() == celdas
+										.get(a).get(b).getValor()) {
+									return false;
+								}
+							}
+						}
+					}
+
+				}
+
+			}
+		}
+
 		return true;
 	}
 
