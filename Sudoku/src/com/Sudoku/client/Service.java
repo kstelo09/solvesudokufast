@@ -7,5 +7,12 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface Service extends RemoteService {
 	void test() throws IllegalArgumentException;
 
-	com.Sudoku.shared.Sudoku isSudoku(int [][] s);
+	com.Sudoku.shared.Sudoku isSudoku(int[][] s);
+
+	com.Sudoku.shared.Sudoku fuerzaBruta(int[][] s);
+
+	com.Sudoku.shared.Sudoku aproximacion(int[][] s);
+
+	com.Sudoku.shared.Sudoku mmmm(int[][] s);
+
 }

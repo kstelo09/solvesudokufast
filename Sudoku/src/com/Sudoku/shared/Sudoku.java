@@ -251,7 +251,7 @@ public class Sudoku implements Serializable {
 	 * @return en caso de que el sudoku halla sido satisfecho true, false de los
 	 *         contrario.
 	 */
-	public boolean solve(int max) {
+	public boolean solveAproximacion(int max) {
 		int mmm = 0;
 		Sudoku s;
 		while (!isSolved()) {
@@ -320,7 +320,7 @@ public class Sudoku implements Serializable {
 						}
 					}
 					while (!sudokus.isEmpty()) {
-						sudokus.peek().solve(max - mmm);
+						sudokus.peek().solveAproximacion(max - mmm);
 						if (sudokus.peek().isSolved()) {
 							copyFrom(sudokus.pop());
 							return true;
@@ -559,9 +559,11 @@ public class Sudoku implements Serializable {
 					for (int i = k; i < l; i++) {
 						for (int j = m; j < n; j++) {
 							if (celdas.get(i).get(j).isSet()) {
-								if (celdas.get(i).get(j).getValor() == celdas
-										.get(a).get(b).getValor()) {
-									return false;
+								if (!(a == i && b == j)) {
+									if (celdas.get(i).get(j).getValor() == celdas
+											.get(a).get(b).getValor()) {
+										return false;
+									}
 								}
 							}
 						}
@@ -575,4 +577,13 @@ public class Sudoku implements Serializable {
 		return true;
 	}
 
+	public void solveFuerzaBruta() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void solveMmmm() {
+		// TODO Auto-generated method stub
+
+	}
 }
