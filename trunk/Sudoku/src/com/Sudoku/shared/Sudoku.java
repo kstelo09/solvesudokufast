@@ -25,7 +25,7 @@ public class Sudoku implements Serializable {
 
 	/**
 	 * Arreglo de Sudokus que representan las posibles soluciones a el mismo.
-	 * este es usado en el método solve()
+	 * este es usado en el m√©todo solve()
 	 */
 	private Stack<Sudoku> sudokus;
 
@@ -88,14 +88,14 @@ public class Sudoku implements Serializable {
 	 *            descrita.
 	 */
 	public void setCelda(int i, int j, int valor) {
-		if (i > -1 && i < 10 && j > -1 && j < 10 && valor > 0 && valor < 11) {
+		if (i > -1 && i < 10 && j > -1 && j < 10 && valor > 0 && valor < 10) {
 			sudoku[i][j] = valor;
 			celdas.get(i).get(j).setValor(valor);
 		}
 	}
 
 	/**
-	 * Método que revisa todas las celdas no resuletas del Sudoku para ver que
+	 * M√©todo que revisa todas las celdas no resuletas del Sudoku para ver que
 	 * valor les es posible tomar. Analiza la celda por columna, fila y cuadro.
 	 */
 	private void setPosibles() {
@@ -165,7 +165,7 @@ public class Sudoku implements Serializable {
 	}
 
 	/**
-	 * Regresa los valores de las celdas para su fácil visualización.
+	 * Regresa los valores de las celdas para su fÔøΩcil visualizaciÔøΩn.
 	 */
 	@Override
 	public String toString() {
@@ -247,7 +247,7 @@ public class Sudoku implements Serializable {
 	 * Resuelve el sudoku por un metodo "humano"
 	 * 
 	 * @param max
-	 *            el número máximo de iteraciones
+	 *            el n√∫mero m√°ximo de iteraciones
 	 * @return en caso de que el sudoku halla sido satisfecho true, false de los
 	 *         contrario.
 	 */
@@ -396,7 +396,7 @@ public class Sudoku implements Serializable {
 
 	/**
 	 * Analiza la celda con los indices indicados como parametros. Revisa la
-	 * fila, columna y cuadro y determina si es la única celda que puede tomar
+	 * fila, columna y cuadro y determina si es la √∫nica celda que puede tomar
 	 * algun valor. En caso de que ninguna otra celda pueda tomar dicho valor
 	 * entonses se fija como resultado.
 	 * 
@@ -485,10 +485,11 @@ public class Sudoku implements Serializable {
 	}
 
 	/**
-	 * Revisa si el Sudoku tiene una solución viable con los valores de cedas
+	 * Revisa si el Sudoku tiene una soluci√≥n viable con los valores de cedas
 	 * actuales.
 	 * 
-	 * @return true en caso de que el sudoku pueda ser aún resuleto, false de lo contrario. 
+	 * @return true en caso de que el sudoku pueda ser a√∫n resuleto, false de lo
+	 *         contrario.
 	 */
 	public boolean isSolvable() {
 		for (int i = 0; i < 9; i++) {
@@ -502,4 +503,34 @@ public class Sudoku implements Serializable {
 		}
 		return true;
 	}
+
+	public boolean isValid() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (celdas.get(i).get(j).isSet()) {
+					for (int k = i + 1; k < 9; k++) {
+						if (celdas.get(k).get(j).isSet()) {
+							if (celdas.get(k).get(j).getValor() == celdas
+									.get(i).get(j).getValor()) {
+								return false;
+							}
+						}
+					}
+
+					for (int k = j + 1; k < 9; k++) {
+						if (celdas.get(i).get(k).isSet()) {
+							if (celdas.get(i).get(k).getValor() == celdas
+									.get(i).get(j).getValor()) {
+								return false;
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		return true;
+	}
+
 }

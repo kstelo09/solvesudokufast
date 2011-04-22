@@ -7,7 +7,7 @@ public class Celda implements Serializable {
 	private static final long serialVersionUID = 8379004402745691071L;
 	/**
 	 * valor que indica si esta celda ha sido resualta y si se le ha fijado
-	 * algœn valor.
+	 * algÃºn valor.
 	 */
 	private boolean isSet = false;
 	/**
@@ -16,7 +16,7 @@ public class Celda implements Serializable {
 	 */
 	private int valor;
 	/**
-	 * Arreglo de nœmeros booleanos que indica que valores podria tomar esta
+	 * Arreglo de nÃºmeros booleanos que indica que valores podria tomar esta
 	 * celda tomando en cuenta la fila, columna y cuadro en la que se encuentra
 	 * en el sudoku. si el valor de posibles[0]= true quiere decir que esta
 	 * celda puede tomar el valor 1.
@@ -58,8 +58,8 @@ public class Celda implements Serializable {
 	}
 
 	/**
-	 * Fija como posible soluci—n para esta celda al nœmero recibido como
-	 * par‡metro.
+	 * Fija como posible soluciÃ³n para esta celda al nÃºmero recibido como
+	 * parÃ¡metro.
 	 * 
 	 * @param posible
 	 *            numero de 1 al 9
@@ -69,7 +69,7 @@ public class Celda implements Serializable {
 	}
 
 	/**
-	 * Remueve al nœmero recibido como par‡metro como posible soluci—n para esta
+	 * Remueve al nï¿½mero recibido como parï¿½metro como posible soluciï¿½n para esta
 	 * celda.
 	 * 
 	 * @param posible
@@ -103,8 +103,8 @@ public class Celda implements Serializable {
 	}
 
 	/**
-	 * Obtiene un arreglo de booleanos de 9 elementos en el que si la pocisi—n 0
-	 * del arreglo es true entonces 1 es una soluci—n posible para esta celda.
+	 * Obtiene un arreglo de booleanos de 9 elementos en el que si la pocisiï¿½n 0
+	 * del arreglo es true entonces 1 es una soluciÃ³n posible para esta celda.
 	 * 
 	 * @return el arreglo de booleanos descrito
 	 */
@@ -114,7 +114,7 @@ public class Celda implements Serializable {
 
 	/**
 	 * 
-	 * @return el nœmero de soluciones posibles para esta celda, 0 en caso de
+	 * @return el nÃºmero de soluciones posibles para esta celda, 0 en caso de
 	 *         que ya este resuelta.
 	 */
 	public int getNumberOfPossibleSolutions() {
