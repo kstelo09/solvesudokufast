@@ -16,6 +16,6 @@ public interface ServiceAsync {
 	void aproximacion(int[][] s,
 			AsyncCallback<com.Sudoku.shared.Sudoku> callback);
 
-	void mmmm(int[][] s, AsyncCallback<com.Sudoku.shared.Sudoku> callback);
+	void inteligente(int[][] s, AsyncCallback<com.Sudoku.shared.Sudoku> callback);
 
 }

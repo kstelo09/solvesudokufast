@@ -33,7 +33,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 	private VerticalPanel botones;
 	private Button fuerzabruta;
 	private Button aproximacion;
-	private Button mmmm;
+	private Button inteligente;
 
 	public Tabla(ClientController controller) {
 		this.controller = controller;
@@ -92,7 +92,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 		botones = new VerticalPanel();
 		fuerzabruta = new Button("Fuerza Bruta");
 		aproximacion = new Button("Aproximación");
-		mmmm = new Button("Ahmmmm");
+		inteligente = new Button("Inteligente");
 
 		botones.setSize("200px", "645px");
 		botones.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -103,16 +103,16 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 		fuerzabruta.setStyleName("Boton");
 		aproximacion.setSize("160px", "160px");
 		aproximacion.setStyleName("Boton");
-		mmmm.setSize("160px", "160px");
-		mmmm.setStyleName("Boton");
+		inteligente.setSize("160px", "160px");
+		inteligente.setStyleName("Boton");
 
 		botones.add(fuerzabruta);
 		botones.add(aproximacion);
-		botones.add(mmmm);
+		botones.add(inteligente);
 
 		fuerzabruta.addClickHandler(this);
 		aproximacion.addClickHandler(this);
-		mmmm.addClickHandler(this);
+		inteligente.addClickHandler(this);
 
 		panel.add(botones);
 
@@ -172,9 +172,13 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 	@Override
 	public void onClick(ClickEvent event) {
 		int[][] data = new int[9][9];
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				data[i][j] = Integer.parseInt(celdas[i][j].getText());
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (celdas[i][j].getText().length() > 0) {
+					data[i][j] = Integer.parseInt(celdas[i][j].getText());
+				} else {
+					data[i][j] = 0;
+				}
 			}
 		}
 		if (event.getSource().equals(fuerzabruta)) {
@@ -191,19 +195,20 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 							setResultado(result);
 						}
 					});
-		} else if (event.getSource().equals(mmmm)) {
-			server.mmmm(data, new AsyncCallback<com.Sudoku.shared.Sudoku>() {
+		} else if (event.getSource().equals(inteligente)) {
+			server.inteligente(data,
+					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
 
-				@Override
-				public void onSuccess(Sudoku result) {
-					setResultado(result);
-				}
-			});
+						@Override
+						public void onSuccess(Sudoku result) {
+							setResultado(result);
+						}
+					});
 		} else if (event.getSource().equals(aproximacion)) {
 			server.aproximacion(data,
 					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
@@ -223,18 +228,8 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 
 	}
 
-	private com.Sudoku.shared.Sudoku makeSudoku() {
-		int[][] data = new int[9][9];
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				data[i][j] = Integer.parseInt(celdas[i][j].getText());
-			}
-		}
-		return new com.Sudoku.shared.Sudoku(data);
-	}
-
 	private void setEnableButtons(boolean b) {
-		mmmm.setEnabled(b);
+		inteligente.setEnabled(b);
 		fuerzabruta.setEnabled(b);
 		aproximacion.setEnabled(b);
 	}
@@ -330,8 +325,15 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 		}
 	}
 
-	private void setResultado(Sudoku result) {
-		// TODO Auto-generated method stub
+	private void setResultado(com.Sudoku.shared.Sudoku result) {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (result.getCelda(i, j).isSet()) {
+					celdas[i][j].setText(Integer.toString(result.getCelda(i, j)
+							.getValor()));
+				}
+			}
+		}
 
 	}
 
