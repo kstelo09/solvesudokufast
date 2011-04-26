@@ -14,7 +14,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 	public void test() throws IllegalArgumentException {
 
 		Sudoku s = new Sudoku(Sudokus.s6);
-		s.solveAproximacion(500);
+		s.solveInteligente(500);
 		System.out.println(s.toString());
 		System.out.println(s.toStringPosibles());
 
@@ -46,7 +46,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 	public Sudoku aproximacion(int[][] s) {
 		Sudoku q = new Sudoku(s);
 		if (q.isValid()) {
-			q.solveAproximacion(500);
+			q.solveInteligente(100);
 			return q;
 		} else {
 			return null;
@@ -54,10 +54,10 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 	}
 
 	@Override
-	public Sudoku mmmm(int[][] s) {
+	public Sudoku inteligente(int[][] s) {
 		Sudoku q = new Sudoku(s);
 		if (q.isValid()) {
-			q.solveMmmm();
+			q.solveAproximacion();
 			return q;
 		} else {
 			return null;

@@ -165,7 +165,7 @@ public class Sudoku implements Serializable {
 	}
 
 	/**
-	 * Regresa los valores de las celdas para su f�cil visualizaci�n.
+	 * Regresa los valores de las celdas para su fácil visualizaci�n.
 	 */
 	@Override
 	public String toString() {
@@ -251,7 +251,7 @@ public class Sudoku implements Serializable {
 	 * @return en caso de que el sudoku halla sido satisfecho true, false de los
 	 *         contrario.
 	 */
-	public boolean solveAproximacion(int max) {
+	public boolean solveInteligente(int max) {
 		int mmm = 0;
 		Sudoku s;
 		while (!isSolved()) {
@@ -320,7 +320,7 @@ public class Sudoku implements Serializable {
 						}
 					}
 					while (!sudokus.isEmpty()) {
-						sudokus.peek().solveAproximacion(max - mmm);
+						sudokus.peek().solveInteligente(max - mmm);
 						if (sudokus.peek().isSolved()) {
 							copyFrom(sudokus.pop());
 							return true;
@@ -504,6 +504,12 @@ public class Sudoku implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Evalua este sudoku para determinar si es válido, por ejemplo si no tiene
+	 * números repetidos en fila, columna o cuadro.
+	 * 
+	 * @return true en caso de que sea válido, false de lo contrario.
+	 */
 	public boolean isValid() {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -577,12 +583,16 @@ public class Sudoku implements Serializable {
 		return true;
 	}
 
+	public Celda getCelda(int i, int j) {
+		return celdas.get(i).get(j);
+	}
+
 	public void solveFuerzaBruta() {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void solveMmmm() {
+	public void solveAproximacion() {
 		// TODO Auto-generated method stub
 
 	}

@@ -13,6 +13,6 @@ public interface Service extends RemoteService {
 
 	com.Sudoku.shared.Sudoku aproximacion(int[][] s);
 
-	com.Sudoku.shared.Sudoku mmmm(int[][] s);
+	com.Sudoku.shared.Sudoku inteligente(int[][] s);
 
 }
