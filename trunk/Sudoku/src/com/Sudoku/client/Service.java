@@ -5,7 +5,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("s")
 public interface Service extends RemoteService {
-	void test() throws IllegalArgumentException;
 
 	com.Sudoku.shared.Sudoku isSudoku(int[][] s);
 

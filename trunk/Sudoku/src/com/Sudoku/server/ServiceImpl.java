@@ -11,15 +11,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class ServiceImpl extends RemoteServiceServlet implements Service {
 
-	public void test() throws IllegalArgumentException {
-
-		Sudoku s = new Sudoku(Sudokus.s6);
-		s.solveInteligente(500);
-		System.out.println(s.toString());
-		System.out.println(s.toStringPosibles());
-
-	}
-
 	@Override
 	public com.Sudoku.shared.Sudoku isSudoku(int[][] s) {
 		com.Sudoku.shared.Sudoku w = new com.Sudoku.shared.Sudoku(s);
@@ -46,7 +37,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 	public Sudoku aproximacion(int[][] s) {
 		Sudoku q = new Sudoku(s);
 		if (q.isValid()) {
-			q.solveInteligente(100);
+			q.solveAproximacion();
 			return q;
 		} else {
 			return null;
@@ -55,13 +46,17 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 
 	@Override
 	public Sudoku inteligente(int[][] s) {
-		Sudoku q = new Sudoku(s);
-		if (q.isValid()) {
-			q.solveAproximacion();
-			return q;
-		} else {
-			return null;
-		}
+		Sudoku q = new Sudoku(Sudokus.s4);
+		q.solveInteligente(400);
+		System.out.println(q.toStringPosibles());
+		return q;
+		// Sudoku q = new Sudoku(s);
+		// if (q.isValid()) {
+		// q.solveInteligente(400);
+		// return q;
+		// } else {
+		// return null;
+		// }
 	}
 
 }
