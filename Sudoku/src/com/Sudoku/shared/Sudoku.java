@@ -161,7 +161,8 @@ public class Sudoku implements Serializable {
 				}
 			}
 		}
-
+		lookForTwins();
+		lookForTriplets();
 	}
 
 	/**
@@ -256,6 +257,7 @@ public class Sudoku implements Serializable {
 		Sudoku s;
 		while (!isSolved()) {
 			if (mmm >= max) {
+				System.out.println("Maxed out");
 				return false;
 			}
 
@@ -287,7 +289,6 @@ public class Sudoku implements Serializable {
 				}
 			}
 			if (!condition) {
-
 				for (int i = 0; i < 9; i++) {
 					for (int j = 0; j < 9; j++) {
 						analizeCelda(i, j);
@@ -297,6 +298,7 @@ public class Sudoku implements Serializable {
 			}
 			mmm++;
 			if (s.equals(this)) {
+				System.out.println("Brute");
 				if (isSolvable()) {
 					int min = Integer.MAX_VALUE, w = 0, v = 0;
 					Celda celda;
@@ -596,4 +598,293 @@ public class Sudoku implements Serializable {
 		// TODO Auto-generated method stub
 
 	}
+
+	/**
+	 * Busca Twins en filas, columnas y cuadros. Un Twin es un par de celdas
+	 * cuyos valores posibles son dos e iguales.
+	 */
+	private void lookForTwins() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				Celda c = celdas.get(i).get(j);
+				if (c.getNumberOfPossibleSolutions() == 2) {
+					for (int k = j + 1; k < 9; k++) {
+						if (c.isTwin(celdas.get(i).get(k))) {
+							System.out.println("Twins Filas");
+							for (int l = 0; l < 9; l++) {
+								if (c.getPosibles()[l]) {
+									for (int m = 0; m < 9; m++) {
+										if (m != j && m != k)
+											celdas.get(i).get(m)
+													.setNotPosible(l + 1);
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				Celda c = celdas.get(j).get(i);
+				if (c.getNumberOfPossibleSolutions() == 2) {
+					for (int k = j + 1; k < 9; k++) {
+						if (c.isTwin(celdas.get(k).get(i))) {
+							System.out.println("Twins Columnas");
+							for (int l = 0; l < 9; l++) {
+								if (c.getPosibles()[l]) {
+									for (int m = 0; m < 9; m++) {
+										if (m != j && m != k)
+											celdas.get(m).get(i)
+													.setNotPosible(l + 1);
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		for (int a = 0; a < 9; a++) {
+			for (int b = 0; b < 9; b++) {
+				if (celdas.get(a).get(b).getNumberOfPossibleSolutions() == 2) {
+					int k = 0, l = 0, m = 0, n = 0;
+					if (a < 3) {
+						k = 0;
+						l = 3;
+					} else if (a < 6) {
+						k = 3;
+						l = 6;
+					} else if (a < 9) {
+						k = 6;
+						l = 9;
+					}
+
+					if (b < 3) {
+						m = 0;
+						n = 3;
+					} else if (b < 6) {
+						m = 3;
+						n = 6;
+					} else if (b < 9) {
+						m = 6;
+						n = 9;
+					}
+					Celda c = celdas.get(a).get(b);
+					for (int i = k; i < l; i++) {
+						for (int j = m; j < n; j++) {
+							if (i != a && b != j) {
+								if (celdas.get(i).get(j).isTwin(c)) {
+									System.out.println("Twins cajas");
+									for (int z = 0; z < 9; z++) {
+										if (c.getPosibles()[z]) {
+											for (int x = k; x < l; x++) {
+												for (int y = m; y < n; y++) {
+													if (x != a && y != b
+															&& x != i && y != j) {
+														celdas.get(x)
+																.get(y)
+																.setNotPosible(
+																		z + 1);
+
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+
+		}
+	}
+
+	private void lookForTriplets() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				Celda c = celdas.get(i).get(j);
+				int posibles = c.getNumberOfPossibleSolutions();
+				if (posibles == 2 || posibles == 3) {
+					for (int k = j + 1; k < 9; k++) {
+						for (int l = k + 1; l < 9; l++) {
+							if (c.isTriplets(celdas.get(i).get(k), celdas
+									.get(i).get(l))) {
+								System.out.println("Triplets Filas");
+								if (posibles == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (c.getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(i)
+															.get(n)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								} else if (celdas.get(i).get(k)
+										.getNumberOfPossibleSolutions() == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (celdas.get(i).get(k).getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(i)
+															.get(n)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								} else if (celdas.get(i).get(l)
+										.getNumberOfPossibleSolutions() == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (celdas.get(i).get(l).getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(i)
+															.get(n)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				Celda c = celdas.get(j).get(i);
+				int posibles = c.getNumberOfPossibleSolutions();
+				if (posibles == 2 || posibles == 3) {
+					for (int k = j + 1; k < 9; k++) {
+						for (int l = k + 1; l < 9; l++) {
+							if (c.isTriplets(celdas.get(k).get(i), celdas
+									.get(l).get(i))) {
+								System.out.println("Triplets Columnas");
+								if (posibles == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (c.getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(n)
+															.get(i)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								} else if (celdas.get(k).get(1)
+										.getNumberOfPossibleSolutions() == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (celdas.get(k).get(i).getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(n)
+															.get(i)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								} else if (celdas.get(l).get(i)
+										.getNumberOfPossibleSolutions() == 3) {
+									for (int m = 0; m < 9; m++) {
+										if (celdas.get(l).get(i).getPosibles()[m]) {
+											for (int n = 0; n < 9; n++) {
+												if (n != j && n != k && n != l) {
+													celdas.get(n)
+															.get(i)
+															.setNotPosible(
+																	n + 1);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		// for (int a = 0; a < 9; a++) {
+		// for (int b = 0; b < 9; b++) {
+		// if (celdas.get(a).get(b).getNumberOfPossibleSolutions() == 2) {
+		// int k = 0, l = 0, m = 0, n = 0;
+		// if (a < 3) {
+		// k = 0;
+		// l = 3;
+		// } else if (a < 6) {
+		// k = 3;
+		// l = 6;
+		// } else if (a < 9) {
+		// k = 6;
+		// l = 9;
+		// }
+		//
+		// if (b < 3) {
+		// m = 0;
+		// n = 3;
+		// } else if (b < 6) {
+		// m = 3;
+		// n = 6;
+		// } else if (b < 9) {
+		// m = 6;
+		// n = 9;
+		// }
+		// Celda c = celdas.get(a).get(b);
+		// for (int i = k; i < l; i++) {
+		// for (int j = m; j < n; j++) {
+		// if (i != a && b != j) {
+		// if (celdas.get(i).get(j).isTwin(c)) {
+		// System.out.println("Twins cajas");
+		// for (int z = 0; z < 9; z++) {
+		// if (c.getPosibles()[z]) {
+		// for (int x = k; x < l; x++) {
+		// for (int y = m; y < n; y++) {
+		// if (x != a && y != b
+		// && x != i && y != j) {
+		// celdas.get(x)
+		// .get(y)
+		// .setNotPosible(
+		// z + 1);
+		//
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		// }
+		//
+		// }
+		//
+		// }
+	}
+
 }

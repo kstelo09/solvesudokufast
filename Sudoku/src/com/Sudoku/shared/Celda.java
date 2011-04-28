@@ -69,7 +69,7 @@ public class Celda implements Serializable {
 	}
 
 	/**
-	 * Remueve al n�mero recibido como par�metro como posible soluci�n para esta
+	 * Remueve al número recibido como parámetro como posible solución para esta
 	 * celda.
 	 * 
 	 * @param posible
@@ -157,4 +157,56 @@ public class Celda implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Determina la celda que se recibe como parámetro tiene solo dos soluciones
+	 * posibles y son las mismas que esta celda.
+	 * 
+	 * @param celda
+	 *            la celda a la que se va a comparar a esta
+	 * @return true en caso de que ambas celdas tengan las mismas posibles
+	 *         soluciones y que sean solo dos.
+	 */
+	boolean isTwin(Celda celda) {
+		if (celda.getNumberOfPossibleSolutions() == 2
+				&& getNumberOfPossibleSolutions() == 2) {
+			for (int i = 0; i < 9; i++) {
+				if (posibles[i] != celda.posibles[i]) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+	boolean isTriplets(Celda c1, Celda c2) {
+		if ((c1.getNumberOfPossibleSolutions() == 3
+				|| c2.getNumberOfPossibleSolutions() == 3 || getNumberOfPossibleSolutions() == 3)
+				&& c1.getNumberOfPossibleSolutions()
+						+ c2.getNumberOfPossibleSolutions()
+						+ getNumberOfPossibleSolutions() > 6) {
+			int w = 0;
+			for (int i = 0; i < 9; i++) {
+				if (c1.posibles[i] && c2.posibles[i] && posibles[i]) {
+					w += 3;
+				} else if (c1.posibles[i] && c2.posibles[i]) {
+					w += 2;
+				} else if (c2.posibles[i] && posibles[i]) {
+					w += 2;
+				} else if (c1.posibles[i] && posibles[i]) {
+					w += 2;
+				}
+			}
+			if (w > 6) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} else {
+			return false;
+		}
+
+	}
 }
