@@ -12,7 +12,9 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -61,19 +63,19 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 				celdas[i][j].setSize("50px", "50px");
 				if (i == 9) {
 					if (j == 9) {
-						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setStyleName("Index");
 						celdas[i][j].setEnabled(false);
 					} else {
-						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setStyleName("Index");
 						celdas[i][j].setText(Integer.toString(j + 1));
 						celdas[i][j].setEnabled(false);
 					}
 				} else if (j == 9) {
 					if (i == 9) {
-						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setStyleName("Index");
 						celdas[i][j].setEnabled(false);
 					} else {
-						celdas[i][j].setStyleName("Boton");
+						celdas[i][j].setStyleName("Index");
 						celdas[i][j].setText(Integer.toString(i + 1));
 						celdas[i][j].setEnabled(false);
 					}
@@ -182,45 +184,88 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 			}
 		}
 		if (event.getSource().equals(fuerzabruta)) {
+			fuerzabruta.addStyleName("Clicked");
+			setEnableButtons(false);
 			server.fuerzaBruta(data,
 					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
-
 						@Override
 						public void onFailure(Throwable caught) {
 							caught.printStackTrace();
+							showInCorrecto();
+							setEnableButtons(true);
 						}
 
 						@Override
 						public void onSuccess(Sudoku result) {
-							setResultado(result);
+							if (result == null) {
+								showInCorrecto();
+								setEnableButtons(true);
+							} else {
+								if (!result.isSolved()) {
+									showInCorrecto();
+								}
+								fuerzabruta.removeStyleName("Clicked");
+								setEnableButtons(true);
+								setResultado(result);
+							}
 						}
 					});
 		} else if (event.getSource().equals(inteligente)) {
+			inteligente.addStyleName("Clicked");
+			setEnableButtons(false);
 			server.inteligente(data,
 					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
 							caught.printStackTrace();
+							showInCorrecto();
+							setEnableButtons(true);
+							inteligente.removeStyleName("Clicked");
 						}
 
 						@Override
 						public void onSuccess(Sudoku result) {
-							setResultado(result);
+							if (result == null) {
+								showInCorrecto();
+								setEnableButtons(true);
+							} else {
+								if (!result.isSolved()) {
+									showInCorrecto();
+								}
+								setEnableButtons(true);
+								inteligente.removeStyleName("Clicked");
+								setResultado(result);
+							}
 						}
 					});
 		} else if (event.getSource().equals(aproximacion)) {
+			aproximacion.addStyleName("Clicked");
+			setEnableButtons(false);
 			server.aproximacion(data,
 					new AsyncCallback<com.Sudoku.shared.Sudoku>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
 							caught.printStackTrace();
+							showInCorrecto();
+							aproximacion.removeStyleName("Clicked");
+							setEnableButtons(true);
 						}
 
 						@Override
 						public void onSuccess(Sudoku result) {
-							setResultado(result);
+							if (result == null) {
+								showInCorrecto();
+								setEnableButtons(true);
+							} else {
+								if (!result.isSolved()) {
+									showInCorrecto();
+								}
+								aproximacion.removeStyleName("Clicked");
+								setEnableButtons(true);
+								setResultado(result);
+							}
 						}
 					});
 
@@ -337,4 +382,32 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 
 	}
 
+	private void showInCorrecto() {
+		final DialogBox dialogBox = new DialogBox();
+		dialogBox.setStyleName("Dialog");
+
+		Button closeButton = new Button("OK");
+		closeButton.addStyleName("Dialog");
+		closeButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();
+			}
+		});
+
+		VerticalPanel dialogContents = new VerticalPanel();
+		dialogContents.setSpacing(4);
+		dialogContents.setSize("400px", "300px");
+		dialogContents
+				.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		dialogContents.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		dialogContents.add(new HTML(
+				"<H2>No ha sido posible encontrar el resultado</H2>"));
+		dialogContents.add(closeButton);
+
+		dialogBox.setWidget(dialogContents);
+		dialogBox.setAnimationEnabled(true);
+		dialogBox.setGlassEnabled(true);
+		dialogBox.center();
+		dialogBox.show();
+	}
 }
