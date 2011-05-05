@@ -166,7 +166,7 @@ public class Sudoku implements Serializable {
 	}
 
 	/**
-	 * Regresa los valores de las celdas para su fácil visualizaci�n.
+	 * Regresa los valores de las celdas para su fácil visualización.
 	 */
 	@Override
 	public String toString() {
@@ -244,6 +244,22 @@ public class Sudoku implements Serializable {
 		return true;
 	}
 
+	public boolean isAprox() {
+		int k = 0;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (celdas.get(i).get(j).isSet()) {
+					k++;
+				}
+			}
+		}
+		if (k >= 65) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Resuelve el sudoku por un metodo "humano"
 	 * 
@@ -257,7 +273,6 @@ public class Sudoku implements Serializable {
 		Sudoku s;
 		while (!isSolved()) {
 			if (mmm >= max) {
-				System.out.println("Maxed out");
 				return false;
 			}
 
@@ -298,7 +313,7 @@ public class Sudoku implements Serializable {
 			}
 			mmm++;
 			if (s.equals(this)) {
-				System.out.println("Brute");
+				// return false;
 				if (isSolvable()) {
 					int min = Integer.MAX_VALUE, w = 0, v = 0;
 					Celda celda;
@@ -594,8 +609,92 @@ public class Sudoku implements Serializable {
 
 	}
 
-	public void solveAproximacion() {
-		// TODO Auto-generated method stub
+	public boolean solveAproximacion(int max) {
+
+		int mmm = 0;
+		Sudoku s;
+		while (!isAprox()) {
+			if (mmm >= max) {
+				return false;
+			}
+
+			s = clone();
+
+			setPosibles();
+
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 9; j++) {
+					Celda celda = celdas.get(i).get(j);
+					if (!celda.isSet()) {
+						if (celda.getNumberOfPossibleSolutions() == 1) {
+							celda.setValor(celda.getSinglePosibleSolution());
+							setPosibles();
+							sudoku[i][j] = celda.getValor();
+						}
+					}
+				}
+			}
+			boolean condition = false;
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 9; j++) {
+					Celda celda = celdas.get(i).get(j);
+					if (!celda.isSet()) {
+						if (celda.getNumberOfPossibleSolutions() == 1) {
+							condition = true;
+						}
+					}
+				}
+			}
+			if (!condition) {
+				for (int i = 0; i < 9; i++) {
+					for (int j = 0; j < 9; j++) {
+						analizeCelda(i, j);
+					}
+				}
+
+			}
+			mmm++;
+			if (s.equals(this)) {
+				// return false;
+				if (isSolvable()) {
+					int min = Integer.MAX_VALUE, w = 0, v = 0;
+					Celda celda;
+					for (int i = 0; i < 9; i++) {
+						for (int j = 0; j < 9; j++) {
+							celda = celdas.get(i).get(j);
+							if (!celda.isSet()) {
+								if (celda.getNumberOfPossibleSolutions() < min) {
+									min = celda.getNumberOfPossibleSolutions();
+									w = i;
+									v = j;
+								}
+							}
+						}
+					}
+					celda = celdas.get(w).get(v);
+					for (int i = 0; i < 9; i++) {
+						if (celda.getPosibles()[i]) {
+							sudokus.push(clone());
+							sudokus.peek().setCelda(w, v, i + 1);
+						}
+					}
+					while (!sudokus.isEmpty()) {
+						sudokus.peek().solveInteligente(max - mmm);
+						if (sudokus.peek().isSolved()) {
+							copyFrom(sudokus.pop());
+							return true;
+						} else {
+							sudokus.pop();
+						}
+					}
+
+				} else {
+					return false;
+				}
+
+			}
+		}
+		return true;
 
 	}
 
@@ -610,7 +709,6 @@ public class Sudoku implements Serializable {
 				if (c.getNumberOfPossibleSolutions() == 2) {
 					for (int k = j + 1; k < 9; k++) {
 						if (c.isTwin(celdas.get(i).get(k))) {
-							System.out.println("Twins Filas");
 							for (int l = 0; l < 9; l++) {
 								if (c.getPosibles()[l]) {
 									for (int m = 0; m < 9; m++) {
@@ -633,7 +731,6 @@ public class Sudoku implements Serializable {
 				if (c.getNumberOfPossibleSolutions() == 2) {
 					for (int k = j + 1; k < 9; k++) {
 						if (c.isTwin(celdas.get(k).get(i))) {
-							System.out.println("Twins Columnas");
 							for (int l = 0; l < 9; l++) {
 								if (c.getPosibles()[l]) {
 									for (int m = 0; m < 9; m++) {
@@ -680,7 +777,6 @@ public class Sudoku implements Serializable {
 						for (int j = m; j < n; j++) {
 							if (i != a && b != j) {
 								if (celdas.get(i).get(j).isTwin(c)) {
-									System.out.println("Twins cajas");
 									for (int z = 0; z < 9; z++) {
 										if (c.getPosibles()[z]) {
 											for (int x = k; x < l; x++) {
@@ -718,7 +814,6 @@ public class Sudoku implements Serializable {
 						for (int l = k + 1; l < 9; l++) {
 							if (c.isTriplets(celdas.get(i).get(k), celdas
 									.get(i).get(l))) {
-								System.out.println("Triplets Filas");
 								if (posibles == 3) {
 									for (int m = 0; m < 9; m++) {
 										if (c.getPosibles()[m]) {
@@ -778,7 +873,6 @@ public class Sudoku implements Serializable {
 						for (int l = k + 1; l < 9; l++) {
 							if (c.isTriplets(celdas.get(k).get(i), celdas
 									.get(l).get(i))) {
-								System.out.println("Triplets Columnas");
 								if (posibles == 3) {
 									for (int m = 0; m < 9; m++) {
 										if (c.getPosibles()[m]) {
@@ -829,62 +923,66 @@ public class Sudoku implements Serializable {
 			}
 		}
 
-		// for (int a = 0; a < 9; a++) {
-		// for (int b = 0; b < 9; b++) {
-		// if (celdas.get(a).get(b).getNumberOfPossibleSolutions() == 2) {
-		// int k = 0, l = 0, m = 0, n = 0;
-		// if (a < 3) {
-		// k = 0;
-		// l = 3;
-		// } else if (a < 6) {
-		// k = 3;
-		// l = 6;
-		// } else if (a < 9) {
-		// k = 6;
-		// l = 9;
-		// }
-		//
-		// if (b < 3) {
-		// m = 0;
-		// n = 3;
-		// } else if (b < 6) {
-		// m = 3;
-		// n = 6;
-		// } else if (b < 9) {
-		// m = 6;
-		// n = 9;
-		// }
-		// Celda c = celdas.get(a).get(b);
-		// for (int i = k; i < l; i++) {
-		// for (int j = m; j < n; j++) {
-		// if (i != a && b != j) {
-		// if (celdas.get(i).get(j).isTwin(c)) {
-		// System.out.println("Twins cajas");
-		// for (int z = 0; z < 9; z++) {
-		// if (c.getPosibles()[z]) {
-		// for (int x = k; x < l; x++) {
-		// for (int y = m; y < n; y++) {
-		// if (x != a && y != b
-		// && x != i && y != j) {
-		// celdas.get(x)
-		// .get(y)
-		// .setNotPosible(
-		// z + 1);
-		//
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		// }
-		//
-		// }
-		//
-		// }
-	}
+		for (int a = 0; a < 9; a++) {
+			for (int b = 0; b < 9; b++) {
+				Celda c = celdas.get(a).get(b);
+				if (c.getNumberOfPossibleSolutions() == 3
+						|| c.getNumberOfPossibleSolutions() == 2) {
+					int k = 0, l = 0, m = 0, n = 0;
+					if (a < 3) {
+						k = 0;
+						l = 3;
+					} else if (a < 6) {
+						k = 3;
+						l = 6;
+					} else if (a < 9) {
+						k = 6;
+						l = 9;
+					}
 
+					if (b < 3) {
+						m = 0;
+						n = 3;
+					} else if (b < 6) {
+						m = 3;
+						n = 6;
+					} else if (b < 9) {
+						m = 6;
+						n = 9;
+					}
+
+					for (int i = k; i < l; i++) {
+						for (int j = m; j < n; j++) {
+							for (int o = i + 1; o < l; o++) {
+								for (int p = j + 1; p < n; p++) {
+									if (a != i && a != o && i != o && b != j
+											&& b != p && j != p) {
+										if (c.isTriplets(celdas.get(i).get(j),
+												celdas.get(o).get(p))) {
+											for (int z = 0; z < 9; z++) {
+												if (c.getPosibles()[z]) {
+													for (int x = k; x < l; x++) {
+														for (int y = m; y < n; y++) {
+															celdas.get(x)
+																	.get(y)
+																	.setNotPosible(
+																			z + 1);
+														}
+													}
+												}
+											}
+
+										}
+									}
+
+								}
+							}
+						}
+					}
+				}
+
+			}
+
+		}
+	}
 }

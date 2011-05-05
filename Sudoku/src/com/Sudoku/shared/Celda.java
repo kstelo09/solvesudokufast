@@ -24,6 +24,11 @@ public class Celda implements Serializable {
 	private boolean[] posibles;
 
 	/**
+	 * número de soluciones posibles a esta celda
+	 */
+	private int nposibles;
+
+	/**
 	 * Constructor por defecto
 	 */
 	public Celda() {
@@ -32,6 +37,7 @@ public class Celda implements Serializable {
 			posibles[i] = true;
 		}
 		valor = 0;
+		nposibles = 9;
 	}
 
 	/**
@@ -47,6 +53,7 @@ public class Celda implements Serializable {
 		for (int i = 0; i < 9; i++) {
 			posibles[i] = false;
 		}
+		nposibles = 0;
 	}
 
 	/**
@@ -65,6 +72,9 @@ public class Celda implements Serializable {
 	 *            numero de 1 al 9
 	 */
 	public void setPosible(int posible) {
+		if (!posibles[posible - 1]) {
+			nposibles++;
+		}
 		posibles[posible - 1] = true;
 	}
 
@@ -76,6 +86,9 @@ public class Celda implements Serializable {
 	 *            numero de 1 al 9
 	 */
 	public void setNotPosible(int posible) {
+		if (posibles[posible - 1]) {
+			nposibles--;
+		}
 		posibles[posible - 1] = false;
 	}
 
@@ -100,10 +113,11 @@ public class Celda implements Serializable {
 		for (int i = 0; i < 9; i++) {
 			posibles[i] = false;
 		}
+		nposibles = 0;
 	}
 
 	/**
-	 * Obtiene un arreglo de booleanos de 9 elementos en el que si la pocisi�n 0
+	 * Obtiene un arreglo de booleanos de 9 elementos en el que si la pocisión 0
 	 * del arreglo es true entonces 1 es una solución posible para esta celda.
 	 * 
 	 * @return el arreglo de booleanos descrito
@@ -118,17 +132,7 @@ public class Celda implements Serializable {
 	 *         que ya este resuelta.
 	 */
 	public int getNumberOfPossibleSolutions() {
-		if (isSet) {
-			return 0;
-		} else {
-			int retorno = 0;
-			for (int i = 0; i < 9; i++) {
-				if (posibles[i]) {
-					retorno++;
-				}
-			}
-			return retorno;
-		}
+		return nposibles;
 	}
 
 	/**
@@ -180,33 +184,93 @@ public class Celda implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Revisa si las celdas son Triplets
+	 * Tres celdas son Triplets si cumplen con uno de estos tres casos:
+	 * *Las tres celdas tienen 3 valores posibles y son los mismos
+	 * *Dos de las tres celdas tienen tres valores y son los mismos y la 
+	 * celda restante tiene dos valores que son un subconjunto de los tres
+	 * valores de las otras dos celdas.
+	 * *Una celda tiene tres valores, las celdas restantes tiene dos valores 
+	 * que son un subconjunto de los tres valores de la otra celda.
+	 *  
+	 * @param c1 la celda a analizar
+	 * @param c2 la celda a analizar
+	 * @return verdadero en caso de que las celdas esta celda, c1 y c2 son 
+	 * triplets, falso de los contrario.
+	 */
 	boolean isTriplets(Celda c1, Celda c2) {
-		if ((c1.getNumberOfPossibleSolutions() == 3
-				|| c2.getNumberOfPossibleSolutions() == 3 || getNumberOfPossibleSolutions() == 3)
-				&& c1.getNumberOfPossibleSolutions()
-						+ c2.getNumberOfPossibleSolutions()
-						+ getNumberOfPossibleSolutions() > 6) {
-			int w = 0;
-			for (int i = 0; i < 9; i++) {
-				if (c1.posibles[i] && c2.posibles[i] && posibles[i]) {
-					w += 3;
-				} else if (c1.posibles[i] && c2.posibles[i]) {
-					w += 2;
-				} else if (c2.posibles[i] && posibles[i]) {
-					w += 2;
-				} else if (c1.posibles[i] && posibles[i]) {
-					w += 2;
+		if (c1.getNumberOfPossibleSolutions() > 1
+				&& c1.getNumberOfPossibleSolutions() < 4
+				&& c2.getNumberOfPossibleSolutions() > 1
+				&& c2.getNumberOfPossibleSolutions() < 4
+				&& getNumberOfPossibleSolutions() > 1
+				&& getNumberOfPossibleSolutions() < 4) {
+			int n = c1.getNumberOfPossibleSolutions()
+					+ c2.getNumberOfPossibleSolutions()
+					+ getNumberOfPossibleSolutions();
+			if (c1.getNumberOfPossibleSolutions() == 3
+					&& c2.getNumberOfPossibleSolutions() == 3
+					&& getNumberOfPossibleSolutions() == 3) {
+				for (int i = 0; i < 9; i++) {
+					if (posibles[i]) {
+						if (!(c1.getPosibles()[i] && c2.getPosibles()[i])) {
+							return false;
+						}
+					}
+				}
+				return true;
+			} else if (getNumberOfPossibleSolutions() == 3) {
+				int w = 0;
+				for (int i = 0; i < 9; i++) {
+					if (posibles[i] && c1.getPosibles()[i]) {
+						w++;
+					}
+					if (posibles[i] && c2.getPosibles()[i]) {
+						w++;
+					}
+				}
+				w += 3;
+				if (w == n) {
+					return true;
+				} else {
+					return false;
+				}
+			} else if (c1.getNumberOfPossibleSolutions() == 3) {
+				int w = 0;
+				for (int i = 0; i < 9; i++) {
+					if (posibles[i] && c1.getPosibles()[i]) {
+						w++;
+					}
+					if (c1.getPosibles()[i] && c2.getPosibles()[i]) {
+						w++;
+					}
+				}
+				w += 3;
+				if (w == n) {
+					return true;
+				} else {
+					return false;
+				}
+			} else if (c2.getNumberOfPossibleSolutions() == 3) {
+				int w = 0;
+				for (int i = 0; i < 9; i++) {
+					if (c2.getPosibles()[i] && c1.getPosibles()[i]) {
+						w++;
+					}
+					if (posibles[i] && c2.getPosibles()[i]) {
+						w++;
+					}
+				}
+				w += 3;
+				if (w == n) {
+					return true;
+				} else {
+					return false;
 				}
 			}
-			if (w > 6) {
-				return true;
-			} else {
-				return false;
-			}
-
-		} else {
-			return false;
 		}
 
+		return false;
 	}
 }

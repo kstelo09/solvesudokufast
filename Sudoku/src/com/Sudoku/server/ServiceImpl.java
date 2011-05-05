@@ -2,7 +2,6 @@ package com.Sudoku.server;
 
 import com.Sudoku.client.Service;
 import com.Sudoku.shared.Sudoku;
-import com.Sudoku.shared.Sudokus;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -37,7 +36,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 	public Sudoku aproximacion(int[][] s) {
 		Sudoku q = new Sudoku(s);
 		if (q.isValid()) {
-			q.solveAproximacion();
+			q.solveAproximacion(400);
 			return q;
 		} else {
 			return null;
@@ -46,17 +45,18 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
 
 	@Override
 	public Sudoku inteligente(int[][] s) {
-		Sudoku q = new Sudoku(Sudokus.s4);
-		q.solveInteligente(400);
-		System.out.println(q.toStringPosibles());
-		return q;
-		// Sudoku q = new Sudoku(s);
-		// if (q.isValid()) {
-		// q.solveInteligente(400);
+		// Sudoku q = new Sudoku(Sudokus.s1);
+		// q.solveInteligente(100);
 		// return q;
-		// } else {
-		// return null;
-		// }
+		// System.out.println(q.toStringPosibles());
+		// return q;
+		Sudoku q = new Sudoku(s);
+		if (q.isValid()) {
+			q.solveInteligente(400);
+			return q;
+		} else {
+			return null;
+		}
 	}
 
 }
