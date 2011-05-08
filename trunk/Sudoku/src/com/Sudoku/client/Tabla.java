@@ -259,7 +259,7 @@ public class Tabla extends DecoratorPanel implements KeyUpHandler,
 								showInCorrecto();
 								setEnableButtons(true);
 							} else {
-								if (!result.isSolved()) {
+								if (!result.isAprox()) {
 									showInCorrecto();
 								}
 								aproximacion.removeStyleName("Clicked");

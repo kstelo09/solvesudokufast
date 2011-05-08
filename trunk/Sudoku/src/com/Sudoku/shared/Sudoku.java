@@ -604,8 +604,69 @@ public class Sudoku implements Serializable {
 		return celdas.get(i).get(j);
 	}
 
-	public void solveFuerzaBruta() {
-		// TODO Auto-generated method stub
+	public boolean solveFuerzaBruta() {
+
+		int mmm = 0;
+		Sudoku s;
+		while (!isSolved()) {
+
+			s = clone();
+
+			setPosibles();
+
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 9; j++) {
+					Celda celda = celdas.get(i).get(j);
+					if (!celda.isSet()) {
+						if (celda.getNumberOfPossibleSolutions() == 1) {
+							celda.setValor(celda.getSinglePosibleSolution());
+							setPosibles();
+							sudoku[i][j] = celda.getValor();
+						}
+					}
+				}
+			}
+			mmm++;
+			if (s.equals(this)) {
+				if (isSolvable()) {
+					int min = Integer.MAX_VALUE, w = 0, v = 0;
+					Celda celda;
+					for (int i = 0; i < 9; i++) {
+						for (int j = 0; j < 9; j++) {
+							celda = celdas.get(i).get(j);
+							if (!celda.isSet()) {
+								if (celda.getNumberOfPossibleSolutions() < min) {
+									min = celda.getNumberOfPossibleSolutions();
+									w = i;
+									v = j;
+								}
+							}
+						}
+					}
+					celda = celdas.get(w).get(v);
+					for (int i = 0; i < 9; i++) {
+						if (celda.getPosibles()[i]) {
+							sudokus.push(clone());
+							sudokus.peek().setCelda(w, v, i + 1);
+						}
+					}
+					while (!sudokus.isEmpty()) {
+						sudokus.peek().solveFuerzaBruta();
+						if (sudokus.peek().isSolved()) {
+							copyFrom(sudokus.pop());
+							return true;
+						} else {
+							sudokus.pop();
+						}
+					}
+
+				} else {
+					return false;
+				}
+
+			}
+		}
+		return true;
 
 	}
 
@@ -679,8 +740,8 @@ public class Sudoku implements Serializable {
 						}
 					}
 					while (!sudokus.isEmpty()) {
-						sudokus.peek().solveInteligente(max - mmm);
-						if (sudokus.peek().isSolved()) {
+						sudokus.peek().solveAproximacion(max - mmm);
+						if (sudokus.peek().isAprox()) {
 							copyFrom(sudokus.pop());
 							return true;
 						} else {
